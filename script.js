@@ -26,18 +26,19 @@ nameInput.addEventListener("input", function () {
   drawImage();
 });
 
-//downloadBtn.addEventListener("click", download);
+downloadBtn.addEventListener("click", download);
 
-//function download() {
-//console.log(downloadBtn);
+function download() {
+  const image = canvas.toDataURL();
+  const link = document.createElement("a");
+  link.href = image;
+  link.download = "Ied Greeting Card - " + nameInput.value;
+  link.click();
+}
+
+//downloadBtn.addEventListener("click", function () {
 //downloadBtn.href = canvas.toDataURL("image/png", 1);
 //downloadBtn.download = "Ied Greeting Card - " + nameInput.value;
-//  downloadBtn.click();
-//}
-
-downloadBtn.addEventListener("click", function () {
-  //console.log(downloadBtn);
-  downloadBtn.href = canvas.toDataURL("image/png", 1);
-  downloadBtn.download = "Ied Greeting Card - " + nameInput.value;
-  //downloadBtn.click();
-});
+// console.log(downloadBtn.href);
+//downloadBtn.click();
+//});
