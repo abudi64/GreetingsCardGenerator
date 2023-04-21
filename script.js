@@ -29,8 +29,8 @@ nameInput.addEventListener("input", function () {
 downloadBtn.addEventListener("click", download);
 
 function download() {
-  downloadBtn.href = canvas.toDataURL("image/png", 1);
   downloadBtn.download = "Ied Greeting Card - " + nameInput.value;
+  downloadBtn.href = canvas.toDataURL("image/png", 1);
   downloadBtn.click();
 }
 
