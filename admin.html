@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <title>Admin - Background Manager</title>
+    <style>
+      body {
+        font-family: "Poppins", system-ui, -apple-system, Segoe UI, Roboto,
+          Arial, sans-serif;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #f0f4ff 0%, #f8fafc 100%);
+      }
+      .container {
+        padding: 2rem 1rem;
+        max-width: 960px;
+      }
+      .card {
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      }
+      .preview {
+        width: 100%;
+        max-width: 540px;
+        border-radius: 12px;
+        display: block;
+      }
+      .muted {
+        color: #6b7280;
+      }
+      .brand {
+        font-weight: 600;
+      }
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+      }
+      @media (max-width: 576px) {
+        .topbar {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="topbar">
+        <h1 class="brand m-0">Admin Dashboard</h1>
+        <a href="index.html" class="btn btn-link p-0"
+          >Kembali ke Halaman Utama</a
+        >
+      </div>
+
+      <div id="loginView" class="card p-4 mb-3">
+        <h4 class="mb-3">Masuk Admin</h4>
+        <p class="muted mb-3">
+          Masukkan password admin untuk melanjutkan. Default:
+          <code>admin123</code>
+        </p>
+        <div class="form-group">
+          <label for="passwordInput">Password</label>
+          <input
+            type="password"
+            id="passwordInput"
+            class="form-control"
+            placeholder="Password"
+          />
+        </div>
+        <button id="loginBtn" class="btn btn-primary">Masuk</button>
+        <small id="loginStatus" class="d-block mt-3 text-danger"></small>
+      </div>
+
+      <div id="dashboardView" class="d-none">
+        <div class="card p-4 mb-3">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <h4 class="m-0">Background Greeting Card</h4>
+            <button id="logoutBtn" class="btn btn-outline-secondary btn-sm">
+              Logout
+            </button>
+          </div>
+          <p class="muted">
+            Unggah gambar latar untuk greeting card. Rasio terbaik 1:1
+            (1080x1080).
+          </p>
+          <div class="form-group">
+            <label for="bgFile">Pilih Gambar (PNG/JPG)</label>
+            <input
+              type="file"
+              id="bgFile"
+              class="form-control-file"
+              accept="image/png,image/jpeg,image/jpg"
+            />
+          </div>
+          <div class="row">
+            <div class="col-12 col-md-6 mb-3">
+              <img id="preview" class="preview" alt="Preview" />
+            </div>
+            <div class="col-12 col-md-6">
+              <div class="d-flex flex-wrap gap-2">
+                <button id="saveBtn" class="btn btn-primary mr-2 mb-2">
+                  Simpan
+                </button>
+                <button id="resetBtn" class="btn btn-outline-secondary mb-2">
+                  Kembalikan Default
+                </button>
+              </div>
+              <small id="status" class="d-block mt-3 muted"></small>
+            </div>
+          </div>
+        </div>
+
+        <div class="card p-4">
+          <div class="d-flex align-items-center justify-content-between">
+            <h4 class="mb-0">Pengaturan Password</h4>
+            <button
+              class="btn btn-outline-primary btn-sm"
+              data-toggle="modal"
+              data-target="#passwordModal"
+            >
+              Kelola Password
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Password Management -->
+    <div
+      class="modal fade"
+      id="passwordModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="passwordModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="passwordModalLabel">
+              Kelola Password Admin
+            </h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="newPassword">Password Baru</label>
+              <input
+                type="password"
+                id="newPassword"
+                class="form-control"
+                placeholder="Password baru"
+              />
+            </div>
+            <div class="form-group">
+              <label for="confirmPassword">Konfirmasi Password</label>
+              <input
+                type="password"
+                id="confirmPassword"
+                class="form-control"
+                placeholder="Ulangi password"
+              />
+            </div>
+            <small id="passwordStatus" class="d-block"></small>
+          </div>
+          <div class="modal-footer d-flex justify-content-between">
+            <button
+              type="button"
+              class="btn btn-outline-danger"
+              id="resetPasswordBtn"
+            >
+              Reset ke Default
+            </button>
+            <div>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                class="btn btn-success"
+                id="changePasswordBtn"
+              >
+                Simpan Password
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="admin.js"></script>
+  </body>
+</html>

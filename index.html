@@ -4,48 +4,110 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <title>Ied Greeting Card Generator</title>
+    <title>Greeting Card Generator</title>
     <style>
-      .container {
-        padding: 3em;
-        display: grid;
-        grid-gap: 2em;
+      :root {
+        --surface: #ffffff;
+        --text: #1f2937;
+        --muted: #6b7280;
+        --primary: #2563eb;
       }
-      #loadFont {
-        font-family: "ara hamah kilania";
+      body {
+        font-family: "Poppins", system-ui, -apple-system, Segoe UI, Roboto,
+          Arial, sans-serif;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #f0f4ff 0%, #f8fafc 100%);
+        color: var(--text);
+      }
+      .container {
+        padding: 2rem 1rem;
+        max-width: 1100px;
+      }
+      .page-title {
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        margin-bottom: 1rem;
+        text-align: center;
+      }
+      .subtitle {
+        color: var(--muted);
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+      .control-card {
+        background: var(--surface);
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        padding: 1rem 1rem;
+        margin-bottom: 1.5rem;
+      }
+      .canvas-card {
+        background: var(--surface);
+        border-radius: 16px;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+        padding: 1rem;
+      }
+      #canvas {
+        width: 100%;
+        height: auto;
+        display: block;
+        border-radius: 12px;
+      }
+      .btn-primary {
+        background-color: var(--primary);
+        border-color: var(--primary);
+      }
+      .btn-primary:hover {
+        filter: brightness(0.95);
       }
     </style>
   </head>
 
   <body>
     <div class="container">
-      <h1>Ied Greeting Card</h1>
-      <div class="row">
-        <div class="col-8">
-          <div class="input-group mb-3">
+      <h1 class="page-title">Greeting Card Generator</h1>
+      <p class="subtitle">
+        Tulis nama, pratinjau langsung, lalu unduh kartu ucapan Anda.
+      </p>
+
+      <div class="control-card">
+        <div class="row align-items-center">
+          <div class="col-12 col-md-8 mb-3 mb-md-0">
+            <label for="name" class="sr-only">Nama</label>
             <input
               id="name"
               type="text"
-              class="form-control"
-              placeholder="Tulis Namamu disini"
-              aria-label="Username"
-              aria-describedby="basic-addon1"
+              class="form-control form-control-lg"
+              placeholder="Tulis namamu di sini"
+              aria-label="Nama untuk kartu"
             />
           </div>
-        </div>
-        <div class="col-4">
-          <button type="button" class="btn btn-primary" id="download-btn">
-            Download
-          </button>
-        </div>
-        <div class="row">
-          <div class="col">
-            <canvas id="canvas" height="1080px" width="1080px"></canvas>
+          <div class="col-12 col-md-4">
+            <button
+              type="button"
+              class="btn btn-primary btn-lg w-100"
+              id="download-btn"
+            >
+              Download Kartu
+            </button>
           </div>
         </div>
+      </div>
+
+      <div class="canvas-card">
+        <canvas
+          id="canvas"
+          height="1080"
+          width="1080"
+          aria-label="Pratinjau kartu ucapan"
+        ></canvas>
       </div>
     </div>
     <script src="script.js"></script>
