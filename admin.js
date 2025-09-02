@@ -23,6 +23,7 @@ const SESSION_KEY = "adminSession";
 const DEFAULT_PASSWORD = "admin123";
 const DEFAULT_HINT =
   "Belum ada gambar custom. Gunakan tombol Simpan untuk menerapkan.";
+const SESSION_TTL_MS = 8 * 60 * 60 * 1000; // 8 hours
 
 function sha256(str) {
   const encoder = new TextEncoder();
@@ -47,7 +48,15 @@ function getStoredPasswordHash() {
 
 function isLoggedIn() {
   try {
-    return localStorage.getItem(SESSION_KEY) === "1";
+    const raw = localStorage.getItem(SESSION_KEY);
+    if (!raw) return false;
+    const data = JSON.parse(raw);
+    if (!data || !data.expiresAt) return false;
+    if (Date.now() >= data.expiresAt) {
+      localStorage.removeItem(SESSION_KEY);
+      return false;
+    }
+    return true;
   } catch (_) {
     return false;
   }
@@ -55,8 +64,12 @@ function isLoggedIn() {
 
 function setLoggedIn(value) {
   try {
-    if (value) localStorage.setItem(SESSION_KEY, "1");
-    else localStorage.removeItem(SESSION_KEY);
+    if (value) {
+      const payload = { createdAt: Date.now(), expiresAt: Date.now() + SESSION_TTL_MS };
+      localStorage.setItem(SESSION_KEY, JSON.stringify(payload));
+    } else {
+      localStorage.removeItem(SESSION_KEY);
+    }
   } catch (_) {}
 }
 
