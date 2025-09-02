@@ -11,6 +11,7 @@
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
       rel="stylesheet"
     />
+    <link rel="preload" as="font" href="fonts/ARAHAMAHKILANIA-REGULAR.woff2" type="font/woff2" crossorigin>
     <title>Greeting Card Generator</title>
     <style>
       :root {
@@ -29,6 +30,11 @@
       .container {
         padding: 2rem 1rem;
         max-width: 1100px;
+      }
+      @font-face {
+        font-family: "ara hamah kilania";
+        src: url("fonts/ARAHAMAHKILANIA-REGULAR.woff2") format("woff2");
+        font-display: swap;
       }
       .page-title {
         font-weight: 600;

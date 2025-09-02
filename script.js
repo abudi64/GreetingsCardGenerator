@@ -4,6 +4,7 @@ const nameInput = document.getElementById("name");
 const downloadBtn = document.getElementById("download-btn");
 
 const image = new Image();
+image.crossOrigin = "anonymous";
 const STORAGE_KEY = "customBackgroundDataUrl";
 const storedBg = (function () {
   try {
@@ -21,15 +22,23 @@ downloadBtn.setAttribute("aria-disabled", "true");
 
 image.onload = function () {
   imageLoaded = true;
-  if (document.fonts && document.fonts.load) {
-    document.fonts
-      .load("55px ara hamah kilania")
-      .catch(function () {})
-      .finally(function () {
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.finally(function () {
+      if (document.fonts.load) {
+        document.fonts
+          .load('55px "ara hamah kilania"')
+          .catch(function () {})
+          .finally(function () {
+            drawImage();
+            downloadBtn.disabled = false;
+            downloadBtn.setAttribute("aria-disabled", "false");
+          });
+      } else {
         drawImage();
         downloadBtn.disabled = false;
         downloadBtn.setAttribute("aria-disabled", "false");
-      });
+      }
+    });
   } else {
     drawImage();
     downloadBtn.disabled = false;
@@ -57,13 +66,13 @@ function drawImage() {
   ctx.fillStyle = "#F6F6F6";
 
   while (fontSize > minFontSize) {
-    ctx.font = fontSize + "px ara hamah kilania";
+    ctx.font = fontSize + 'px "ara hamah kilania", sans-serif';
     const measuredWidth = ctx.measureText(text).width;
     if (measuredWidth <= targetWidth) break;
     fontSize -= 2;
   }
 
-  ctx.font = fontSize + "px ara hamah kilania";
+  ctx.font = fontSize + 'px "ara hamah kilania", sans-serif';
   ctx.fillText(text, canvas.width / 2, 840);
 }
 
