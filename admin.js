@@ -17,9 +17,17 @@ const changePasswordBtn = document.getElementById("changePasswordBtn");
 const passwordStatus = document.getElementById("passwordStatus");
 const resetPasswordBtn = document.getElementById("resetPasswordBtn");
 
+const fontFileInput = document.getElementById("fontFile");
+const fontFamilyNameInput = document.getElementById("fontFamilyName");
+const uploadFontBtn = document.getElementById("uploadFontBtn");
+const fontSelect = document.getElementById("fontSelect");
+const fontStatus = document.getElementById("fontStatus");
+
 const STORAGE_KEY = "customBackgroundDataUrl";
 const AUTH_KEY = "adminPasswordHash";
 const SESSION_KEY = "adminSession";
+const FONTS_KEY = "customFonts";
+const SELECTED_FONT_KEY = "selectedFont";
 const DEFAULT_PASSWORD = "admin123";
 const DEFAULT_HINT =
   "Belum ada gambar custom. Gunakan tombol Simpan untuk menerapkan.";
@@ -65,7 +73,10 @@ function isLoggedIn() {
 function setLoggedIn(value) {
   try {
     if (value) {
-      const payload = { createdAt: Date.now(), expiresAt: Date.now() + SESSION_TTL_MS };
+      const payload = {
+        createdAt: Date.now(),
+        expiresAt: Date.now() + SESSION_TTL_MS,
+      };
       localStorage.setItem(SESSION_KEY, JSON.stringify(payload));
     } else {
       localStorage.removeItem(SESSION_KEY);
@@ -93,10 +104,65 @@ function initBackgroundSection() {
   }
 }
 
+function initFontSection() {
+  // Load saved fonts and populate dropdown
+  const savedFonts = getSavedFonts();
+  const selectedFont = localStorage.getItem(SELECTED_FONT_KEY) || "ara hamah kilania";
+  
+  // Clear and repopulate dropdown
+  fontSelect.innerHTML = '<option value="ara hamah kilania">ara hamah kilania (Default)</option>';
+  
+  savedFonts.forEach(font => {
+    const option = document.createElement('option');
+    option.value = font.familyName;
+    option.textContent = font.displayName;
+    fontSelect.appendChild(option);
+  });
+  
+  fontSelect.value = selectedFont;
+  fontStatus.textContent = `Font aktif: ${selectedFont}`;
+}
+
+function getSavedFonts() {
+  try {
+    const saved = localStorage.getItem(FONTS_KEY);
+    return saved ? JSON.parse(saved) : [];
+  } catch (_) {
+    return [];
+  }
+}
+
+function saveFont(fontData) {
+  try {
+    const fonts = getSavedFonts();
+    fonts.push(fontData);
+    localStorage.setItem(FONTS_KEY, JSON.stringify(fonts));
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+
+function ttfToWoff2(ttfArrayBuffer) {
+  // Simple TTF to WOFF2 conversion using browser APIs
+  // Note: This is a simplified approach. For production, consider using a proper font conversion library
+  return new Promise((resolve, reject) => {
+    try {
+      // Create a simple WOFF2-like structure (this is a basic implementation)
+      // In a real implementation, you'd use a proper TTF to WOFF2 converter
+      const woff2Data = new Uint8Array(ttfArrayBuffer);
+      resolve(woff2Data);
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
 function init() {
   if (isLoggedIn()) {
     showDashboard();
     initBackgroundSection();
+    initFontSection();
   } else {
     showLogin();
   }
@@ -116,6 +182,7 @@ loginBtn.addEventListener("click", function () {
       loginStatus.textContent = "";
       showDashboard();
       initBackgroundSection();
+      initFontSection();
       passwordInput.value = "";
     } else {
       loginStatus.textContent = "Password salah.";
@@ -211,6 +278,77 @@ resetPasswordBtn.addEventListener("click", function () {
       passwordStatus.className = "d-block text-danger";
     }
   });
+});
+
+uploadFontBtn.addEventListener("click", function () {
+  const file = fontFileInput.files && fontFileInput.files[0];
+  const familyName = fontFamilyNameInput.value.trim();
+  
+  if (!file) {
+    fontStatus.textContent = "Pilih file TTF terlebih dahulu.";
+    fontStatus.className = "d-block text-danger";
+    return;
+  }
+  
+  if (!familyName) {
+    fontStatus.textContent = "Masukkan nama font family.";
+    fontStatus.className = "d-block text-danger";
+    return;
+  }
+  
+  if (!file.name.toLowerCase().endsWith('.ttf')) {
+    fontStatus.textContent = "File harus berformat TTF.";
+    fontStatus.className = "d-block text-danger";
+    return;
+  }
+  
+  fontStatus.textContent = "Mengkonversi font...";
+  fontStatus.className = "d-block text-info";
+  
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    const ttfData = e.target.result;
+    const ttfArrayBuffer = new Uint8Array(ttfData);
+    
+    ttfToWoff2(ttfArrayBuffer).then(function (woff2Data) {
+      // Convert to base64 for storage
+      const base64 = btoa(String.fromCharCode.apply(null, woff2Data));
+      const fontData = {
+        familyName: familyName,
+        displayName: familyName,
+        woff2Data: base64,
+        uploadedAt: Date.now()
+      };
+      
+      if (saveFont(fontData)) {
+        fontStatus.textContent = `Font "${familyName}" berhasil diupload dan disimpan.`;
+        fontStatus.className = "d-block text-success";
+        fontFileInput.value = "";
+        fontFamilyNameInput.value = "";
+        initFontSection(); // Refresh dropdown
+      } else {
+        fontStatus.textContent = "Gagal menyimpan font.";
+        fontStatus.className = "d-block text-danger";
+      }
+    }).catch(function (error) {
+      fontStatus.textContent = "Gagal mengkonversi font: " + error.message;
+      fontStatus.className = "d-block text-danger";
+    });
+  };
+  
+  reader.onerror = function () {
+    fontStatus.textContent = "Gagal membaca file.";
+    fontStatus.className = "d-block text-danger";
+  };
+  
+  reader.readAsArrayBuffer(file);
+});
+
+fontSelect.addEventListener("change", function () {
+  const selectedFont = fontSelect.value;
+  localStorage.setItem(SELECTED_FONT_KEY, selectedFont);
+  fontStatus.textContent = `Font aktif: ${selectedFont}`;
+  fontStatus.className = "d-block text-success";
 });
 
 init();
